@@ -1,0 +1,61 @@
+#Contributors: Meghna Masudi and Neel Haria
+# Lab1 
+#Due: 03/02/2020 11:59pm
+
+.data
+	str1: .asciiz "Masudi"
+	str2: .asciiz "nnnz"
+	out1: .asciiz "The first common character is: "
+	out2: .asciiz "No character common"
+
+.text
+	main:
+		la $s0,str1 		#saving str1 to a s0 (s0 is used to store values for later use)
+		la $s1,str2 		#saving str2 to a s1
+		la $t6,out1
+		la $t7,out2
+		move $s2,$s0		#temporary registers used for iterating over the string $s2 and $s3
+		move $s3,$s1
+		
+		
+	firstmatch:	
+		lb $s4,($s2)			
+		beqz $s4,exit 	#if $s4 becomes 0, there is no common character
+		jal strchr 		
+		beq $s4,$t3,common
+		addi $s2,$s2,1
+		j firstmatch
+		 
+		
+	strchr:
+		lb $s5,($s3)
+		beqz $s5,return
+		beq $s5,$s4,return
+		addi $s3,$s3,1
+		j strchr
+				
+	return:
+		move $t3,$s5
+		move $s3,$s1
+		jr $ra
+	
+	common:	
+		move $a0,$t6
+		li $v0,4
+		syscall
+		
+		move $a0,$t3
+		li $v0,11
+		syscall
+		
+		j exit
+	
+	
+	noCommon:
+		move $a0,$t7
+		li $v0,4
+		syscall
+		j exit
+	exit:
+		li $v0,10
+		syscall
